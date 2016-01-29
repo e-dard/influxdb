@@ -675,6 +675,39 @@ func TestParsePointUnescapeTags(t *testing.T) {
 			},
 			time.Unix(0, 0)))
 
+	// double backslash in tag value
+	test(t, `cpu,region=ea\\st value=1.0`,
+		NewTestPoint("cpu",
+			models.Tags{
+				"region": `ea\st`,
+			},
+			models.Fields{
+				"value": 1.0,
+			},
+			time.Unix(0, 0)))
+
+	// escaped backslash at end of tag value
+	test(t, `cpu,region=east\\ value=1.0`,
+		NewTestPoint("cpu",
+			models.Tags{
+				"region": `east\`,
+			},
+			models.Fields{
+				"value": 1.0,
+			},
+			time.Unix(0, 0)))
+
+	// escaped backslash at end of tag value with multiple tags
+	test(t, `cpu,region=east\\,host= value=1.0`,
+		NewTestPoint("cpu",
+			models.Tags{
+				"region": `east\`,
+			},
+			models.Fields{
+				"value": 1.0,
+			},
+			time.Unix(0, 0)))
+
 	// space is tag name
 	test(t, `cpu,\ =east value=1.0`,
 		NewTestPoint("cpu",
